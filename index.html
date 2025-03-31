@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Room Lookup</title>
+  <style>
+    body { font-family: Arial; padding: 2em; max-width: 600px; margin: auto; }
+    input, button { padding: 8px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Find Your Room Assignment</h2>
+  <input type="text" id="studentID" placeholder="Enter Student ID">
+  <button onclick="lookup()">Check</button>
+  <div id="result" style="margin-top:20px;"></div>
+
+  <script>
+    async function lookup() {
+      const id = document.getElementById("studentID").value.trim();
+      const res = await fetch("https://docs.google.com/spreadsheets/d/e/PASTE_YOUR_SHEET_URL_HERE/pub?output=csv");
+      const text = await res.text();
+      const rows = text.split('\n').map(row => row.split(','));
+
+      const headers = rows[0];
+      const matches = rows.slice(1).find(r => r[0] === id);
+
+      const div = document.getElementById("result");
+      if (!matches) {
+        div.innerHTML = "<p style='color:red;'>Student ID not found.</p>";
+      } else {
+        div.innerHTML = `
+          <p><strong>Name:</strong> ${matches[2]} ${matches[1]}</p>
+          <p><strong>8th Tues:</strong> ${matches[5]}</p>
+          <p><strong>9th Wed:</strong> ${matches[6]}</p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
